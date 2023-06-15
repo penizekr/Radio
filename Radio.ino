@@ -40,12 +40,13 @@
 /// The band that will be tuned by this sketch is FM.
 #define FIX_BAND RADIO_BAND_FM
 
-/// The station that will be tuned by this sketch is 89.30 MHz.
-#define FIX_STATION 9460
+/// The station that will be tuned by this sketch is 8930 -> 89.30 MHz.
+#define FIX_STATION1 9460
+#define FIX_STATION2 8820
 
 TEA5767 radio;    // Create an instance of Class for Si4703 Chip
 
-//iniciace pinu pro výběr stanice
+//pin pro výběr stanice
 int pinStaniceVyber = 3;                //digitalni pin D3
 int aktualniHodnotaPinStaniceVyber=1; // aktualni hodnota podle prepinace
 int posledniHodnotaPinStaniceVyber=1; // posledni hodnota stanice
@@ -63,7 +64,7 @@ void setup() {
   radio.init();
 
   // HERE: adjust the frequency to a local sender
-  radio.setBandFrequency(FIX_BAND, FIX_STATION);
+  radio.setBandFrequency(FIX_BAND, FIX_STATION1);
   radio.setVolume(1);
   radio.setMono(true);
 
@@ -77,17 +78,18 @@ digitalWrite(pinStaniceVyber, HIGH);       // HIGH->stanice 1, LOW->stanice 2
 /// show the current chip data every 3 seconds.
 void loop() {
 
-aktualniHodnotaPinStaniceVyber = digitalRead(pinStaniceVyber);
-if (aktualniHodnotaPinStaniceVyber != posledniHodnotaPinStaniceVyber){
-  switch (aktualniHodnotaPinStaniceVyber) {
+aktualniHodnotaPinStaniceVyber = digitalRead(pinStaniceVyber);    //precteni hodnoty prepinace
+if (aktualniHodnotaPinStaniceVyber != posledniHodnotaPinStaniceVyber){      //pokud je hodnota prepinace jina nez posledni vybrana hodnota
+  switch (aktualniHodnotaPinStaniceVyber) {    //vyber stanice podle hodnoty prepinace
   case 1:
-    radio.setBandFrequency(FIX_BAND, 9460);
+    radio.setBandFrequency(FIX_BAND, FIX_STATION1);
     posledniHodnotaPinStaniceVyber = 1;
     break;
   case 0:
-    radio.setBandFrequency(FIX_BAND, 8820);
+    radio.setBandFrequency(FIX_BAND, FIX_STATION2);
     posledniHodnotaPinStaniceVyber = 0;
     break;
   }
-} 
+}
+//pokud je hodnota prepinace stejna jako posledni vybrana hodnota, tak se nic nedela
 }
