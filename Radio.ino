@@ -41,12 +41,15 @@
 #define FIX_BAND RADIO_BAND_FM
 
 /// The station that will be tuned by this sketch is 89.30 MHz.
-#define FIX_STATION 9461
+#define FIX_STATION 9460
 
 TEA5767 radio;    // Create an instance of Class for Si4703 Chip
 
-uint8_t test1;
-byte test2;
+//iniciace pinu pro výběr stanice
+int pinStaniceVyber = 3;                //digitalni pin D3
+int aktualniHodnotaPinStaniceVyber=1; // aktualni hodnota podle prepinace
+int posledniHodnotaPinStaniceVyber=1; // posledni hodnota stanice
+
 
 /// Setup a FM only radio configuration
 /// with some debugging on the Serial port
@@ -63,11 +66,28 @@ void setup() {
   radio.setBandFrequency(FIX_BAND, FIX_STATION);
   radio.setVolume(1);
   radio.setMono(true);
+
+//iniciace pinu pro výběr stanice
+pinMode(pinStaniceVyber, INPUT);           // 
+digitalWrite(pinStaniceVyber, HIGH);       // HIGH->stanice 1, LOW->stanice 2
+
 } // setup
 
 
 /// show the current chip data every 3 seconds.
 void loop() {
 
+aktualniHodnotaPinStaniceVyber = digitalRead(pinStaniceVyber);
+if (aktualniHodnotaPinStaniceVyber != posledniHodnotaPinStaniceVyber){
+  switch (aktualniHodnotaPinStaniceVyber) {
+  case 1:
+    radio.setBandFrequency(FIX_BAND, 9460);
+    posledniHodnotaPinStaniceVyber = 1;
+    break;
+  case 0:
+    radio.setBandFrequency(FIX_BAND, 8820);
+    posledniHodnotaPinStaniceVyber = 0;
+    break;
+  }
 } 
-
+}
